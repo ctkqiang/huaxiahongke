@@ -1,0 +1,54 @@
+# Built application files
+*.apk
+*.ap_ 
+*.dex
+*.class
+
+# Gradle files
+.gradle/
+build/
+bin/
+out/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Android Studio specific files
+.idea/
+*.iml
+
+# Log files
+*.log
+
+# User-specific configurations
+*.swp
+*.swo
+
+# Android NDK
+obj/
+
+# Android Studio capture files
+captures/
+
+# JetBrains IDE
+*.iws
+*.ipr
+*.idea/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Maven
+target/
+
+# Gradle Wrapper
+gradle-wrapper.jar
+
+# Keystore files
+*.jks
+*.keystore
+
+# Eclipse project files
+.project
+.classpath
