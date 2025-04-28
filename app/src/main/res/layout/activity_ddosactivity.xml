@@ -4,43 +4,134 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DDOSActivity"
-    android:orientation="vertical">
+    tools:context=".activities.DDOSActivity"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/black">
 
+    <!-- IP 输入框 -->
     <EditText
         android:id="@+id/ipEditText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter IP (Optional)"
-        android:inputType="text" />
+        android:layout_height="70dp"
+        android:padding="12dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/edittext_ddos"
+        android:hint="输入 URL(http:// 或 https://)或IP"
+        android:inputType="text"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:importantForAccessibility="yes"
+        tools:ignore="HardcodedText" />
 
+    <!-- 端口输入框 -->
     <EditText
         android:id="@+id/portEditText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter Port (Default: 80)"
-        android:inputType="number" />
+        android:layout_height="70dp"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/edittext_ddos"
+        android:hint="输入端口 (默认: 80)"
+        android:inputType="number"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:importantForAccessibility="yes"
+        tools:ignore="HardcodedText" />
 
+    <!-- 请求数量输入框 -->
     <EditText
         android:id="@+id/requestsEditText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter Number of Requests (Default: 100000000)"
-        android:inputType="number" />
+        android:layout_height="70dp"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/edittext_ddos"
+        android:hint="输入请求数量（默认: 100）"
+        android:inputType="number"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:importantForAccessibility="yes"
+        tools:ignore="HardcodedText" />
 
+    <!-- 状态文本 -->
     <TextView
         android:id="@+id/statusTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Attack Status"
-        android:textSize="18sp"
-        android:layout_gravity="center"/>
+        android:textColor="#FF0000"
+        android:textSize="10sp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp"
+        android:importantForAccessibility="yes"
+        tools:ignore="HardcodedText,SmallSp" />
 
-    <Button
-        android:id="@+id/startAttackButton"
+    <!-- 进度条（加载中） -->
+    <ProgressBar
+        android:id="@+id/progressBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start DDoS Attack"
-        android:onClick="startAttack"/>
+        android:visibility="gone"
+        android:indeterminate="true"
+        android:layout_marginTop="16dp" />
+
+    <!-- 类似终端的日志输出（TextView） -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp">
+        <TextView
+            android:id="@+id/terminalTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="8sp"
+            android:fontFamily="monospace"
+            android:textColor="@android:color/holo_red_light"
+            android:layout_marginTop="8dp"
+            android:scrollbars="vertical"
+            android:textFontWeight="@android:integer/config_longAnimTime"
+            android:importantForAccessibility="yes"
+            tools:ignore="HardcodedText" />
+    </ScrollView>
+
+    <!-- 启动攻击按钮 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center">
+
+        <Button
+            android:id="@+id/startAttackButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="开始 DDoS 攻击"
+            android:background="@drawable/edittext_ddos"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:layout_marginRight="5dp"
+            android:importantForAccessibility="yes"
+            tools:ignore="HardcodedText,RtlHardcoded" />
+
+        <Button
+            android:id="@+id/stopAttackButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="停止 DDoS 攻击"
+            android:background="@drawable/edittext_ddos"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:layout_marginLeft="5dp"
+            android:importantForAccessibility="yes"
+            tools:ignore="HardcodedText,RtlHardcoded" />
+
+    </LinearLayout>
 
 </LinearLayout>
