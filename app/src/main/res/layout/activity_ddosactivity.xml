@@ -20,7 +20,7 @@
         android:background="@drawable/edittext_ddos"
         android:hint="输入 URL(http:// 或 https://)或IP"
         android:inputType="text"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="@android:color/black"
         android:textSize="16sp"
         android:importantForAccessibility="yes"
         tools:ignore="HardcodedText" />
@@ -36,7 +36,7 @@
         android:background="@drawable/edittext_ddos"
         android:hint="输入端口 (默认: 80)"
         android:inputType="number"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="@android:color/black"
         android:textSize="16sp"
         android:importantForAccessibility="yes"
         tools:ignore="HardcodedText" />
@@ -52,7 +52,7 @@
         android:background="@drawable/edittext_ddos"
         android:hint="输入请求数量（默认: 100）"
         android:inputType="number"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="@android:color/black"
         android:textSize="16sp"
         android:importantForAccessibility="yes"
         tools:ignore="HardcodedText" />
@@ -88,7 +88,7 @@
             android:id="@+id/terminalTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:textSize="8sp"
             android:fontFamily="monospace"
             android:textColor="@android:color/black"
             android:layout_marginTop="8dp"

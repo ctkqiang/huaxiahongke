@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity
         Objects.requireNonNull(this.getSupportActionBar()).hide();
         this.setContentView(R.layout.activity_main);
 
+        Log.i("TEST_LOG", "✨ Log.i() is working? ✨");
+
 
         if (!isAgreementAccepted())
         {
@@ -141,6 +143,12 @@ public class MainActivity extends AppCompatActivity
                 break;
             case 5:
                 this.startActivity(new Intent(this, ShellActivity.class));
+                break;
+            case 6:
+                this.startActivity(new Intent(this, CommActivity.class));
+                break;
+            case 7:
+            case 8:
             default:
                 Toast.makeText(this, "该功能正在施工中～", Toast.LENGTH_SHORT).show();
                 break;

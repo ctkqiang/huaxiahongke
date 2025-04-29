@@ -33,34 +33,11 @@ import cn.ctkqiang.huaxiahongke.R;
 import cn.ctkqiang.huaxiahongke.constants.Constants;
 import cn.ctkqiang.huaxiahongke.service.DdosAttackService;
 
+@SuppressWarnings("NonAsciiCharacters")
 public class DDOSActivity extends AppCompatActivity
 {
-
     private static final String TAG = Constants.TAG_NAME;
-
-    private String[] 中国域名后缀 = {
-            ".cn",          // 中国通用域名
-            ".xin",         // 中国的一个新的域名后缀
-            ".gov.cn",      // 中国政府网站
-            ".edu.cn",      // 中国教育机构
-            ".org.cn",      // 中国组织
-            ".net.cn",      // 中国网络相关实体
-            ".公司",        // 中文公司域名
-            ".网络",        // 中文网络域名
-            ".中国",        // 中文中国域名
-            ".中国公司",     // 中文中国公司域名
-            ".政务",        // 中文政府事务域名
-            ".公益",        // 中文公益域名
-            ".me",          // 个人域名（在中国较为流行）
-            ".hk",          // 香港域名
-            ".mo",          // 澳门域名
-            ".tw",          // 台湾域名
-            ".中国论坛",     // 中文论坛域名
-            ".商标",        // 中文商标域名
-            ".法律",        // 中文法律相关域名
-            ".商会"         // 中文商会域名
-    };
-
+    private final String[] 中国域名后缀 = Constants.中国域名后缀;
 
     private String 主机 = "";
     private String IP = "";
@@ -74,7 +51,6 @@ public class DDOSActivity extends AppCompatActivity
     private TextView 终端TextView;
 
     private ProgressDialog loadingDialog; // 进度对话框
-
 
     // 攻击方法
     private void 执行攻击()
@@ -154,7 +130,7 @@ public class DDOSActivity extends AppCompatActivity
             {
                 if (终端TextView != null)
                 {
-                    终端TextView.append(信息);
+                    终端TextView.append("\n" + 信息);
                     终端TextView.scrollTo(0, 终端TextView.getHeight()); // 自动滚动到底部
 
                     Log.i(TAG, "run: " + 信息);
@@ -174,8 +150,7 @@ public class DDOSActivity extends AppCompatActivity
         setContentView(R.layout.activity_ddosactivity);
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "DDoS攻击频道";
             String description = "DDoS攻击进度频道";
 

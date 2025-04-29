@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">华夏红客工具</string>
+    <string name="error_no_permission">未授予麦克风权限，请在设置中开启录音权限。</string>
+    <string name="error_init_fail">音频录制器初始化失败，请检查设备兼容性。</string>
+    <string name="talking">正在通话</string>
+    <string name="press_to_talk">按下以说话</string>
+    <string name="init_failed">初始化网络组件失败</string>
+    <string name="not_initialized">网络未初始化。请重启应用。</string>
 </resources>
