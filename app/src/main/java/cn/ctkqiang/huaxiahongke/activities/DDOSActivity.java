@@ -30,12 +30,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import cn.ctkqiang.huaxiahongke.R;
+import cn.ctkqiang.huaxiahongke.constants.Constants;
 import cn.ctkqiang.huaxiahongke.service.DdosAttackService;
 
 public class DDOSActivity extends AppCompatActivity
 {
 
-    private static final String TAG = "DDOSActivity";
+    private static final String TAG = Constants.TAG_NAME;
 
     private String[] 中国域名后缀 = {
             ".cn",          // 中国通用域名

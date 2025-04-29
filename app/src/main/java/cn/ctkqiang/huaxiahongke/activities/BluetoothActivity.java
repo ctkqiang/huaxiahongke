@@ -29,11 +29,12 @@ import java.util.UUID;
 
 import cn.ctkqiang.huaxiahongke.R;
 import cn.ctkqiang.huaxiahongke.adpters.DeviceListAdapter;
+import cn.ctkqiang.huaxiahongke.constants.Constants;
 
 @SuppressWarnings("NonAsciiCharacters")
 public class BluetoothActivity extends AppCompatActivity
 {
-    private static final String TAG = "BluetoothActivity";
+    private static final String TAG = Constants.TAG_NAME;
 
     private BluetoothAdapter 蓝牙适配器;
     private Set<BluetoothDevice> 已扫描设备集合;

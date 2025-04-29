@@ -18,6 +18,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.ParcelUuid;
 import android.util.Log;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.UUID;
 
 import cn.ctkqiang.huaxiahongke.R;
+import cn.ctkqiang.huaxiahongke.activities.BluetoothActivity;
 
 @SuppressWarnings("NonAsciiCharacters")
 public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
@@ -161,19 +163,20 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
                         serviceInfo = "没有可用的服务 UUID";
                     }
 
-                    new AlertDialog.Builder(context)
-                            .setTitle("服务列表")
-                            .setMessage(serviceInfo)
-                            .setCancelable(true)
-                            .setPositiveButton("我知道了", new DialogInterface.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which)
-                                {
-                                    dialog.dismiss();
-                                }
-                            })
-                            .show();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                    builder.setTitle("服务列表");
+                    builder.setMessage(serviceInfo);
+                    builder.setCancelable(true);
+                    builder.setPositiveButton("我知道了", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.show();
                 }
             });
         }
@@ -193,6 +196,8 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
     @SuppressLint("MissingPermission")
     private void connectToClassicBluetoothDevice(BluetoothDevice device)
     {
+        ProgressDialog progressDialog = new ProgressDialog(context);
+
         if (device.getBondState() != BluetoothDevice.BOND_BONDED)
         {
             Log.i(TAG, "设备未配对，尝试发起配对: " + device.getName());
@@ -201,7 +206,6 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
             return;
         }
 
-        ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setTitle("连接中");
         progressDialog.setMessage("正在连接至设备: " + device.getName());
         progressDialog.setCancelable(false);
@@ -217,6 +221,7 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
                 try
                 {
                     BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+
                     try
                     {
                         socket = device.createRfcommSocketToServiceRecord(通用UUID);
@@ -229,7 +234,6 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
                         {
                             Method method = device.getClass().getMethod("createRfcommSocket", int.class);
                             socket = (BluetoothSocket) method.invoke(device, 1);
-                            assert socket != null;
                             socket.connect();
 
                         } catch (Exception e2)
@@ -246,18 +250,66 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
                         public void run()
                         {
                             progressDialog.dismiss();
+
                             Log.i(TAG, "连接成功: " + device.getName());
 
-                            new AlertDialog.Builder(context)
-                                    .setTitle("连接成功")
-                                    .setMessage("已连接至设备: " + device.getName())
-                                    .setCancelable(true)
-                                    .setPositiveButton("确定", (dialog, which) -> dialog.dismiss())
-                                    .show();
+                            AlertDialog.Builder 连接builder = new AlertDialog.Builder(context);
+
+                            连接builder.setTitle("连接成功");
+                            连接builder.setMessage("已连接至设备: " + device.getName());
+                            连接builder.setCancelable(true);
+                            连接builder.setPositiveButton("确定", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            连接builder.show();
+
+                            String name = device.getName();
+                            String mac = device.getAddress().toUpperCase();
+
+                            boolean isHC05 = name != null && name.contains("HC")
+                                    || mac.startsWith("98:D3:31");
+                            boolean isESP32 = name != null && name.contains("ESP")
+                                    || mac.startsWith("24:6F:28");
+
+                            if (isHC05 || isESP32)
+                            {
+                                Intent intent = new Intent(context, BluetoothActivity.class);
+                                intent.putExtra("device", device);
+                                context.startActivity(intent);
+                            } else
+                            {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                                builder.setTitle("未知设备");
+                                builder.setMessage("无法识别设备类型，是否仍然连接？");
+                                builder.setPositiveButton("连接", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface d, int w)
+                                    {
+
+                                    }
+                                });
+                                builder.setNegativeButton("取消", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface d, int w)
+                                    {
+                                        d.dismiss();
+                                    }
+                                });
+                                builder.show();
+                            }
 
                             try
                             {
-                                finalSocket.close(); // 你可改成持久保持连接
+                                finalSocket.close();
                             } catch (IOException e)
                             {
                                 Log.e(TAG, "关闭连接失败", e);
@@ -275,24 +327,26 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
                                 "\n地址: " + device.getAddress() +
                                 "\n错误: " + e.toString();
 
-                        new AlertDialog.Builder(context)
-                                .setTitle("连接失败")
-                                .setMessage(errorMessage)
-                                .setCancelable(true)
-                                .setPositiveButton("重试", (dialog, which) -> DeviceListAdapter.this.connectToClassicBluetoothDevice(device))
-                                .setNegativeButton("复制错误信息", new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                                        ClipData clip = ClipData.newPlainText("蓝牙错误信息", errorMessage);
-                                        clipboard.setPrimaryClip(clip);
-                                        Toast.makeText(context, "已复制错误信息", Toast.LENGTH_SHORT).show();
-                                        dialog.dismiss();
-                                    }
-                                })
-                                .show();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                        builder.setTitle("连接失败");
+                        builder.setMessage(errorMessage);
+                        builder.setCancelable(true);
+                        builder.setPositiveButton("重试", (dialog, which) -> DeviceListAdapter.this.connectToClassicBluetoothDevice(device));
+                        builder.setNegativeButton("复制错误信息", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                                ClipData clip = ClipData.newPlainText("蓝牙错误信息", errorMessage);
+                                clipboard.setPrimaryClip(clip);
+                                Toast.makeText(context, "已复制错误信息", Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            }
+                        });
+
+                        builder.show();
                     });
 
                     try
@@ -335,6 +389,7 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState)
             {
                 super.onConnectionStateChange(gatt, status, newState);
+
                 if (newState == BluetoothProfile.STATE_CONNECTED)
                 {
                     Log.i(TAG, "成功连接到BLE设备: " + gatt.getDevice().getName());
@@ -364,6 +419,7 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
             public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
             {
                 super.onCharacteristicRead(gatt, characteristic, status);
+
                 if (status == BluetoothGatt.GATT_SUCCESS)
                 {
                     Log.i(TAG, "成功读取特征值");
@@ -403,7 +459,6 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
             case BluetoothDevice.BOND_NONE:
             default:
                 return "没配对";
-
         }
     }
 

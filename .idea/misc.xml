@@ -8,6 +8,7 @@
         <entry key="app/src/main/res/drawable/edittext_ddos.xml" value="0.171" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.171" />
         <entry key="app/src/main/res/layout/activity_bluetooth.xml" value="0.254981884057971" />
+        <entry key="app/src/main/res/layout/activity_bluetooth_terminal.xml" value="0.27853260869565216" />
         <entry key="app/src/main/res/layout/activity_ddosactivity.xml" value="0.254981884057971" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.254981884057971" />
         <entry key="app/src/main/res/layout/device_item.xml" value="0.254981884057971" />

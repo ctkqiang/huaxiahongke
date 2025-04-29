@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/terminalLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:padding="8dp"
+    tools:context=".activities.BluetoothTerminal">
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#000000"
+        android:fillViewport="true">
+
+        <TextView
+            android:id="@+id/terminalOutput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:padding="4dp"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="4dp">
+
+        <EditText
+            android:id="@+id/commandInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#222222"
+            android:fontFamily="monospace"
+            android:hint="输入命令..."
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:padding="8dp"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#AAAAAA"
+            tools:ignore="HardcodedText" />
+
+        <Button
+            android:id="@+id/sendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="#008577"
+            android:text="发送"
+            android:textColor="@android:color/white"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+
+</LinearLayout>
