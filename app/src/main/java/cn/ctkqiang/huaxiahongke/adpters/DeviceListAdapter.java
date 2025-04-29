@@ -3,6 +3,7 @@ package cn.ctkqiang.huaxiahongke.adpters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
@@ -13,6 +14,8 @@ import android.bluetooth.BluetoothProfile;
 import android.bluetooth.BluetoothSocket;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
@@ -26,6 +29,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -33,6 +38,7 @@ import java.util.UUID;
 
 import cn.ctkqiang.huaxiahongke.R;
 
+@SuppressWarnings("NonAsciiCharacters")
 public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
 {
     private static final UUID 通用UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -53,6 +59,8 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
+        int bondColorResId;
+
         if (convertView == null)
         {
             // 创建视图
@@ -60,8 +68,6 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
         }
 
         BluetoothDevice device = getItem(position);
-
-        BluetoothClass bluetoothClass = device.getBluetoothClass();
 
         TextView deviceName = convertView.findViewById(R.id.deviceName);
         TextView deviceaddr = convertView.findViewById(R.id.address);
@@ -73,12 +79,34 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
 
         if (device != null)
         {
+            BluetoothClass bluetoothClass = device.getBluetoothClass();
+
+            int bondState = device.getBondState();
+
             // 如果设备名称为空，显示“未知设备”
             deviceName.setText(device.getName() != null ? "名称: " + device.getName() : "未知设备");
             deviceaddr.setText(device.getAddress() != null ? "地址: " + device.getAddress() : "未知");
             devicetype.setText(device.getType() != BluetoothDevice.DEVICE_TYPE_UNKNOWN ? "蓝牙类型: " + this.Get设备类型(device.getType()) : "未知");
 
-            bondstate.setText("配对状态: " + this.Get配对状态(device.getBondState()));
+            switch (bondState)
+            {
+                case BluetoothDevice.BOND_BONDED:
+                    bondColorResId = R.color.bonded;
+                    break;
+                case BluetoothDevice.BOND_BONDING:
+                    bondColorResId = R.color.bonding;
+                    break;
+                case BluetoothDevice.BOND_NONE:
+                    bondColorResId = R.color.not_bonded;
+                    break;
+                default:
+                    bondColorResId = R.color.unknown;
+                    break;
+            }
+
+            bondstate.setText(this.Get配对状态(device.getBondState()));
+            bondstate.setTextColor(ContextCompat.getColor(context, bondColorResId));
+
             systemtype.setText("设备类型: " + this.Get设备(bluetoothClass));
 
             Log.i(TAG, "蓝牙: " + device);
@@ -161,58 +189,120 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
     }
 
     // 连接经典蓝牙设备的修复版本
+    @SuppressWarnings("JavaReflectionMemberAccess")
     @SuppressLint("MissingPermission")
     private void connectToClassicBluetoothDevice(BluetoothDevice device)
     {
-        new Thread(() ->
+        if (device.getBondState() != BluetoothDevice.BOND_BONDED)
         {
-            try
-            {
-                // 停止设备扫描（关键修复）
-                BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+            Log.i(TAG, "设备未配对，尝试发起配对: " + device.getName());
+            device.createBond();
+            Toast.makeText(context, "设备未配对，正在请求配对...", Toast.LENGTH_LONG).show();
+            return;
+        }
 
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle("连接中");
+        progressDialog.setMessage("正在连接至设备: " + device.getName());
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
                 BluetoothSocket socket = null;
+
                 try
                 {
-                    // 优先尝试标准连接方式
-                    socket = device.createRfcommSocketToServiceRecord(通用UUID);
-                    socket.connect();
-                } catch (IOException e)
-                {
-                    // 备用连接方法（针对中国厂商设备）
-                    Log.e(TAG, "标准连接失败，尝试备用方法", e);
-                    Method method = device.getClass().getMethod("createRfcommSocket", int.class);
-                    socket = (BluetoothSocket) method.invoke(device, 1);
-
-                    assert socket != null;
-
-                    socket.connect();
-                }
-
-                final BluetoothSocket finalSocket = socket;
-                ((Activity) context).runOnUiThread(() ->
-                {
+                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
                     try
                     {
-                        Log.i(TAG, "经典蓝牙连接成功: " + device.getName());
-                        Toast.makeText(context, "连接成功", Toast.LENGTH_SHORT).show();
-
-                        // 这里可以添加数据通信逻辑
-                        finalSocket.close();
-                    } catch (IOException e)
+                        socket = device.createRfcommSocketToServiceRecord(通用UUID);
+                        socket.connect();
+                    } catch (IOException e1)
                     {
-                        Log.e(TAG, "关闭套接字失败", e);
+                        Log.e(TAG, "标准连接失败，尝试备用方法", e1);
+
+                        try
+                        {
+                            Method method = device.getClass().getMethod("createRfcommSocket", int.class);
+                            socket = (BluetoothSocket) method.invoke(device, 1);
+                            assert socket != null;
+                            socket.connect();
+
+                        } catch (Exception e2)
+                        {
+                            throw new IOException("备用连接也失败", e2);
+                        }
                     }
-                });
 
-            } catch (Exception e)
-            {
-                ((Activity) context).runOnUiThread(() ->
+                    BluetoothSocket finalSocket = socket;
+
+                    ((Activity) context).runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            progressDialog.dismiss();
+                            Log.i(TAG, "连接成功: " + device.getName());
+
+                            new AlertDialog.Builder(context)
+                                    .setTitle("连接成功")
+                                    .setMessage("已连接至设备: " + device.getName())
+                                    .setCancelable(true)
+                                    .setPositiveButton("确定", (dialog, which) -> dialog.dismiss())
+                                    .show();
+
+                            try
+                            {
+                                finalSocket.close(); // 你可改成持久保持连接
+                            } catch (IOException e)
+                            {
+                                Log.e(TAG, "关闭连接失败", e);
+                            }
+                        }
+                    });
+
+                } catch (Exception e)
                 {
-                    Log.e(TAG, "连接失败: " + device.getName(), e);
+                    ((Activity) context).runOnUiThread(() ->
+                    {
+                        Log.e(TAG, "连接失败: " + device.getName(), e);
 
-                    Toast.makeText(context, "连接失败: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-                });
+                        String errorMessage = "设备名称: " + device.getName() +
+                                "\n地址: " + device.getAddress() +
+                                "\n错误: " + e.toString();
+
+                        new AlertDialog.Builder(context)
+                                .setTitle("连接失败")
+                                .setMessage(errorMessage)
+                                .setCancelable(true)
+                                .setPositiveButton("重试", (dialog, which) -> DeviceListAdapter.this.connectToClassicBluetoothDevice(device))
+                                .setNegativeButton("复制错误信息", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                                        ClipData clip = ClipData.newPlainText("蓝牙错误信息", errorMessage);
+                                        clipboard.setPrimaryClip(clip);
+                                        Toast.makeText(context, "已复制错误信息", Toast.LENGTH_SHORT).show();
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .show();
+                    });
+
+                    try
+                    {
+                        if (socket != null) socket.close();
+                    } catch (IOException ex)
+                    {
+                        Log.e(TAG, "连接失败后关闭 socket 异常", ex);
+                    }
+                }
             }
         }).start();
     }

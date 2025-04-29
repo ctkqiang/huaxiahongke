@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/white"
     tools:context=".activities.BluetoothActivity">
 
-    <!-- SwipeRefreshLayout to enable pull-to-refresh -->
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
@@ -18,9 +18,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
-            android:divider="@android:color/white"
-            android:dividerHeight="0.5dp"
             android:background="@android:color/transparent"
+            android:divider="@android:color/black"
+            android:dividerHeight="0.5dp"
             tools:ignore="MissingClass" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

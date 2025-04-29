@@ -89,7 +89,7 @@ public class DDOSActivity extends AppCompatActivity
                 {
                     new AlertDialog.Builder(DDOSActivity.this)
                             .setTitle("紧急警告")
-                            .setMessage("⚠️ 禁止攻击同胞!!! ⚠️\n\n此操作严重违法，并可能造成不可逆后果！\n请立刻停止！")
+                            .setMessage("⚠️ 禁止攻击同胞!!! ⚠️\n\n此操作严重，并可能造成不可逆后果！\n请立刻停止！")
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setCancelable(false)
                             .setPositiveButton("我明白了", new DialogInterface.OnClickListener()
@@ -153,7 +153,7 @@ public class DDOSActivity extends AppCompatActivity
             {
                 if (终端TextView != null)
                 {
-                    终端TextView.append("\n" + 信息);
+                    终端TextView.append( 信息);
                     终端TextView.scrollTo(0, 终端TextView.getHeight()); // 自动滚动到底部
 
                     Log.i(TAG, "run: " + 信息);
@@ -229,7 +229,7 @@ public class DDOSActivity extends AppCompatActivity
                     请求数 = Integer.parseInt(请求数编辑框.getText().toString().trim());
                 } catch (NumberFormatException e)
                 {
-                    请求数 = 100000000; // 默认请求数
+                    请求数 = 100; // 默认请求数
                 }
 
                 // 启动 DDoS 攻击

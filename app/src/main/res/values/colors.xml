@@ -8,4 +8,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="bonded">#4CAF50</color>         <!-- 已配对：绿色 -->
+    <color name="bonding">#FFC107</color>        <!-- 正在配对：琥珀色 -->
+    <color name="not_bonded">#F44336</color>     <!-- 未配对：红色 -->
+    <color name="unknown">#9E9E9E</color>        <!-- 未知状态：灰色 -->
+
 </resources>

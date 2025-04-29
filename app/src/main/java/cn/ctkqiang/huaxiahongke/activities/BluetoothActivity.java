@@ -30,6 +30,7 @@ import java.util.UUID;
 import cn.ctkqiang.huaxiahongke.R;
 import cn.ctkqiang.huaxiahongke.adpters.DeviceListAdapter;
 
+@SuppressWarnings("NonAsciiCharacters")
 public class BluetoothActivity extends AppCompatActivity
 {
     private static final String TAG = "BluetoothActivity";

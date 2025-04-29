@@ -28,6 +28,7 @@ import java.util.Objects;
 import cn.ctkqiang.huaxiahongke.R;
 import cn.ctkqiang.huaxiahongke.adpters.MenuAdapter;
 
+@SuppressWarnings("ALL")
 public class MainActivity extends AppCompatActivity
 {
     private static final String TAG = "华夏红客工具";

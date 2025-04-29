@@ -20,8 +20,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="菜单项"
-            android:textColor="@color/white"
-            android:textSize="24sp"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
             android:textStyle="bold"
             tools:ignore="HardcodedText" />
 

@@ -7,7 +7,7 @@
     tools:context=".activities.DDOSActivity"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/black">
+    android:background="@android:color/white">
 
     <!-- IP 输入框 -->
     <EditText
@@ -20,7 +20,7 @@
         android:background="@drawable/edittext_ddos"
         android:hint="输入 URL(http:// 或 https://)或IP"
         android:inputType="text"
-        android:textColor="#000000"
+        android:textColor="@android:color/darker_gray"
         android:textSize="16sp"
         android:importantForAccessibility="yes"
         tools:ignore="HardcodedText" />
@@ -36,7 +36,7 @@
         android:background="@drawable/edittext_ddos"
         android:hint="输入端口 (默认: 80)"
         android:inputType="number"
-        android:textColor="#000000"
+        android:textColor="@android:color/darker_gray"
         android:textSize="16sp"
         android:importantForAccessibility="yes"
         tools:ignore="HardcodedText" />
@@ -52,7 +52,7 @@
         android:background="@drawable/edittext_ddos"
         android:hint="输入请求数量（默认: 100）"
         android:inputType="number"
-        android:textColor="#000000"
+        android:textColor="@android:color/darker_gray"
         android:textSize="16sp"
         android:importantForAccessibility="yes"
         tools:ignore="HardcodedText" />
@@ -62,8 +62,8 @@
         android:id="@+id/statusTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#FF0000"
-        android:textSize="10sp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
         android:layout_gravity="center"
         android:layout_marginBottom="8dp"
         android:importantForAccessibility="yes"
@@ -88,9 +88,9 @@
             android:id="@+id/terminalTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="8sp"
+            android:textSize="16sp"
             android:fontFamily="monospace"
-            android:textColor="@android:color/holo_red_light"
+            android:textColor="@android:color/black"
             android:layout_marginTop="8dp"
             android:scrollbars="vertical"
             android:textFontWeight="@android:integer/config_longAnimTime"
