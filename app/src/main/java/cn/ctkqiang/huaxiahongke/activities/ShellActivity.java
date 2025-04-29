@@ -191,6 +191,8 @@ public class ShellActivity extends AppCompatActivity
                                 "mkdir [目录] - 创建目录\n" +
                                 "rm [文件或目录] - 删除文件或目录\n" +
                                 "python3 [命令] - 执行 Python 代码\n" +
+                                "ssh [用户名@]主机名[:端口] - 连接到SSH服务器\n" +
+                                "ssh [选项] [用户名@]主机名 - 使用选项连接SSH服务器" +
                                 "curl [URL] - 执行 curl 请求");
                         return;
                     }
@@ -215,6 +217,9 @@ public class ShellActivity extends AppCompatActivity
                     } else if (命令字符串.startsWith("curl"))
                     {
                         ShellActivity.this.执行Curl命令(命令字符串); // 新增curl命令处理
+                    } else if (命令字符串.startsWith("ssh"))
+                    {
+                        ShellActivity.this.执行SSH命令(命令字符串);
                     } else if (命令字符串.startsWith("cat"))
                     {
                         ShellActivity.this.查看文件内容(命令字符串);
@@ -583,6 +588,245 @@ public class ShellActivity extends AppCompatActivity
         }
 
         this.追加输出(deviceInfo.toString());
+    }
+
+    // 在ShellActivity类中添加执行SSH命令的方法
+    private void 执行SSH命令(String 命令字符串)
+    {
+        try
+        {
+            // 解析SSH命令参数
+            String[] 命令部分 = 命令字符串.split(" ");
+
+            // 检查是否为帮助命令
+            if (命令部分.length == 2 && (命令部分[1].equals("--help") || 命令部分[1].equals("-h")))
+            {
+                显示SSH使用提示();
+                return;
+            }
+
+            if (命令部分.length < 2)
+            {
+                this.追加输出("使用方法: ssh [选项] [用户名@]主机名[:端口]");
+                this.追加输出("获取详细帮助请使用: ssh --help");
+                return;
+            }
+
+            // 验证是否安装了SSH客户端
+            if (!检查SSH客户端())
+            {
+                this.追加输出("🚫 SSH客户端未安装。请先安装SSH客户端应用。");
+                this.追加输出("推荐安装: JuiceSSH, Termux或ConnectBot等应用");
+                this.追加输出("或者执行: apt install openssh 安装SSH客户端");
+                return;
+            }
+
+            // 获取主机信息
+            String hostInfo = 命令部分[命令部分.length - 1];
+
+            // 显示SSH连接横幅
+            显示SSH连接横幅(hostInfo);
+
+            // 显示连接状态
+            显示彩色提示("info", "正在连接到SSH服务器: " + hostInfo);
+
+            // 构建完整的SSH命令
+            StringBuilder fullCommand = new StringBuilder("ssh");
+            for (int i = 1; i < 命令部分.length; i++)
+            {
+                fullCommand.append(" ").append(命令部分[i]);
+            }
+
+            // 执行SSH命令
+            Process sshProcess = Runtime.getRuntime().exec(new String[]{"/system/bin/sh", "-c", fullCommand.toString()});
+
+            // 读取SSH输出
+            BufferedReader outputReader = new BufferedReader(new InputStreamReader(sshProcess.getInputStream()));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(sshProcess.getErrorStream()));
+
+            // 创建输出结果构建器
+            final StringBuilder outputResult = new StringBuilder();
+
+            // 读取标准输出
+            String line;
+            while ((line = outputReader.readLine()) != null)
+            {
+                final String currentLine = line;
+                this.runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        ShellActivity.this.追加输出(currentLine);
+                    }
+                });
+            }
+
+            // 读取错误输出
+            while ((line = errorReader.readLine()) != null)
+            {
+                final String currentLine = line;
+                this.runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        ShellActivity.this.追加输出("错误: " + currentLine);
+                    }
+                });
+            }
+
+            // 等待进程完成
+            int exitCode = sshProcess.waitFor();
+
+            // 显示SSH连接结束横幅
+            显示SSH连接结束横幅(exitCode);
+
+            // 根据退出代码显示不同的提示
+            if (exitCode == 0)
+            {
+                显示彩色提示("success", "SSH会话正常结束");
+            } else
+            {
+                显示彩色提示("warning", "SSH会话异常结束，退出代码: " + exitCode);
+            }
+
+        } catch (final Exception e)
+        {
+            this.runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    ShellActivity.this.追加输出("SSH执行失败: " + e.getMessage());
+                }
+            });
+        }
+    }
+
+
+    /**
+     * 显示彩色提示信息
+     *
+     * @param 提示类型 提示类型(info, success, warning, error)
+     * @param 消息   提示消息
+     */
+    private void 显示彩色提示(String 提示类型, String 消息)
+    {
+        String prefix;
+        switch (提示类型)
+        {
+            case "success":
+                prefix = "✅ ";
+                break;
+            case "warning":
+                prefix = "⚠️ ";
+                break;
+            case "error":
+                prefix = "❌ ";
+                break;
+            case "info":
+            default:
+                prefix = "ℹ️ ";
+                break;
+        }
+
+        this.追加输出(prefix + 消息);
+    }
+
+    /**
+     * 显示SSH连接横幅
+     *
+     * @param 主机信息 SSH主机信息
+     */
+    private void 显示SSH连接横幅(String 主机信息)
+    {
+        StringBuilder banner = new StringBuilder();
+        banner.append("\n");
+        banner.append("======================================\n");
+        banner.append("      SSH 连接: ").append(主机信息).append("\n");
+        banner.append("      ").append(new java.util.Date().toString()).append("\n");
+        banner.append("======================================\n");
+
+        this.追加输出(banner.toString());
+    }
+
+    /**
+     * 显示SSH连接结束横幅
+     *
+     * @param 退出代码 SSH会话退出代码
+     */
+    private void 显示SSH连接结束横幅(int 退出代码)
+    {
+        StringBuilder banner = new StringBuilder();
+        banner.append("\n");
+        banner.append("======================================\n");
+        banner.append("      SSH 会话已结束                  \n");
+        banner.append("      退出代码: ").append(退出代码).append("\n");
+        banner.append("======================================\n");
+
+        this.追加输出(banner.toString());
+    }
+
+    /**
+     * 显示SSH连接状态信息
+     *
+     * @param 主机信息 SSH主机信息
+     * @param 状态   连接状态信息
+     */
+    private void 显示SSH连接状态(final String 主机信息, final String 状态)
+    {
+        this.runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                ShellActivity.this.追加输出("SSH状态 [" + 主机信息 + "]: " + 状态);
+            }
+        });
+    }
+
+    /**
+     * 检查是否存在SSH客户端
+     *
+     * @return 如果存在返回true，否则返回false
+     */
+    private boolean 检查SSH客户端()
+    {
+        try
+        {
+            Process process = Runtime.getRuntime().exec(new String[]{"/system/bin/sh", "-c", "which ssh"});
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String path = reader.readLine();
+            process.waitFor();
+
+            return path != null && !path.isEmpty();
+        } catch (Exception e)
+        {
+            return false;
+        }
+    }
+
+    /**
+     * 显示SSH命令使用提示
+     */
+    private void 显示SSH使用提示()
+    {
+        StringBuilder help = new StringBuilder();
+        help.append("SSH命令使用指南:\n");
+        help.append("  基本用法: ssh 用户名@主机名\n");
+        help.append("  指定端口: ssh -p 端口号 用户名@主机名\n");
+        help.append("  密钥认证: ssh -i 密钥文件 用户名@主机名\n");
+        help.append("  常用选项:\n");
+        help.append("    -p 端口: 指定连接端口\n");
+        help.append("    -i 文件: 指定身份文件(私钥)\n");
+        help.append("    -v: 显示详细连接信息\n");
+        help.append("    -4/-6: 强制使用IPv4/IPv6\n");
+        help.append("  示例:\n");
+        help.append("    ssh user@192.168.1.100\n");
+        help.append("    ssh -p 2222 admin@example.com\n");
+
+        this.追加输出(help.toString());
     }
 
 }
