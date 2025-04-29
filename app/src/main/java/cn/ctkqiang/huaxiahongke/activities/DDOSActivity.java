@@ -88,21 +88,21 @@ public class DDOSActivity extends AppCompatActivity
                 @Override
                 public void run()
                 {
-                    new AlertDialog.Builder(DDOSActivity.this)
-                            .setTitle("紧急警告")
-                            .setMessage("⚠️ 禁止攻击同胞!!! ⚠️\n\n此操作严重，并可能造成不可逆后果！\n请立刻停止！")
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setCancelable(false)
-                            .setPositiveButton("我明白了", new DialogInterface.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which)
-                                {
-                                    dialog.dismiss();
-                                    finish();
-                                }
-                            })
-                            .show();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(DDOSActivity.this);
+                    builder.setTitle("紧急警告");
+                    builder.setMessage("⚠️ 禁止攻击同胞!!! ⚠️\n\n此操作严重，并可能造成不可逆后果！\n请立刻停止！");
+                    builder.setIcon(android.R.drawable.ic_dialog_alert);
+                    builder.setCancelable(false);
+                    builder.setPositiveButton("我明白了", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.dismiss();
+                            finish();
+                        }
+                    });
+                    builder.show();
                 }
             });
 
@@ -154,7 +154,7 @@ public class DDOSActivity extends AppCompatActivity
             {
                 if (终端TextView != null)
                 {
-                    终端TextView.append( 信息);
+                    终端TextView.append(信息);
                     终端TextView.scrollTo(0, 终端TextView.getHeight()); // 自动滚动到底部
 
                     Log.i(TAG, "run: " + 信息);
@@ -174,7 +174,8 @@ public class DDOSActivity extends AppCompatActivity
         setContentView(R.layout.activity_ddosactivity);
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
             CharSequence name = "DDoS攻击频道";
             String description = "DDoS攻击进度频道";
 

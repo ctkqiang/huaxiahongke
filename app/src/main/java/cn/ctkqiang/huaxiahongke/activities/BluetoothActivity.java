@@ -1,5 +1,7 @@
 package cn.ctkqiang.huaxiahongke.activities;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -73,15 +75,19 @@ public class BluetoothActivity extends AppCompatActivity
     // 启动蓝牙请求的结果处理器
     private final ActivityResultLauncher<Intent> 启动蓝牙启动器 = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            结果 ->
+            new ActivityResultCallback<ActivityResult>()
             {
-                if (蓝牙适配器.isEnabled())
+                @Override
+                public void onActivityResult(ActivityResult 结果)
                 {
-                    开始扫描蓝牙设备真执行();
-                } else
-                {
-                    Toast.makeText(this, "蓝牙未开启，无法扫描设备！", Toast.LENGTH_SHORT).show();
-                    finish();
+                    if (蓝牙适配器.isEnabled())
+                    {
+                        BluetoothActivity.this.开始扫描蓝牙设备真执行();
+                    } else
+                    {
+                        Toast.makeText(BluetoothActivity.this, "蓝牙未开启，无法扫描设备！", Toast.LENGTH_SHORT).show();
+                        BluetoothActivity.this.finish();
+                    }
                 }
             }
     );

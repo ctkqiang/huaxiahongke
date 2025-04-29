@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Objects;
 
 import cn.ctkqiang.huaxiahongke.R;
 import cn.ctkqiang.huaxiahongke.constants.Constants;
@@ -37,22 +39,35 @@ public class BluetoothTerminal extends AppCompatActivity
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_bluetooth_terminal);
 
+        Objects.requireNonNull(this.getSupportActionBar()).hide(); // 隐藏ActionBar
+
         this.terminalOutput = this.findViewById(R.id.terminalOutput);
         this.commandInput = this.findViewById(R.id.commandInput);
         this.scrollView = this.findViewById(R.id.scrollView);
         this.sendButton = this.findViewById(R.id.sendButton);
 
-        this.sendButton.setOnClickListener(v -> this.sendCommand());
-
-        this.commandInput.setOnEditorActionListener((v, actionId, event) ->
+        this.sendButton.setOnClickListener(new View.OnClickListener()
         {
-            if (actionId == EditorInfo.IME_ACTION_SEND ||
-                    (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN))
+            @Override
+            public void onClick(View v)
             {
-                this.sendCommand();
-                return true;
+                BluetoothTerminal.this.sendCommand();
             }
-            return false;
+        });
+
+        this.commandInput.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+            {
+                if (actionId == EditorInfo.IME_ACTION_SEND ||
+                        (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN))
+                {
+                    BluetoothTerminal.this.sendCommand();
+                    return true;
+                }
+                return false;
+            }
         });
     }
 
@@ -90,6 +105,13 @@ public class BluetoothTerminal extends AppCompatActivity
     private void appendOutput(String message)
     {
         this.terminalOutput.append(message + "\n");
-        this.scrollView.post(() -> this.scrollView.fullScroll(android.view.View.FOCUS_DOWN));
+        this.scrollView.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                BluetoothTerminal.this.scrollView.fullScroll(android.view.View.FOCUS_DOWN);
+            }
+        });
     }
 }

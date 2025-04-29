@@ -134,6 +134,13 @@ public class MainActivity extends AppCompatActivity
             case 1:
                 检查蓝牙权限并处理();
                 break;
+            case 2:
+            case 3:
+            case 4:
+                Toast.makeText(this, "该功能正在施工中～", Toast.LENGTH_SHORT).show();
+                break;
+            case 5:
+                this.startActivity(new Intent(this, ShellActivity.class));
             default:
                 Toast.makeText(this, "该功能正在施工中～", Toast.LENGTH_SHORT).show();
                 break;
